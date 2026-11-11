@@ -1,0 +1,96 @@
+#!/usr/bin/env fish
+
+function _print_help
+    echo 'Usage: csv2json [OPTIONS] [FILE ...]
+
+Options:
+    -h, --help
+        Print this help'
+end
+
+# _process_line gets $line as an argument
+function _process_line -a line col_count
+    # Because header was a list, we can't pass it by name here, and we have to
+    # get it from $argv, which looks like this: [line, col_count, header...]
+    set header $argv[3..]
+    # Split the line with seperator ','
+    set values (string split ',' $line)
+
+    # Because we want to get the right column for each value, we loop over
+    # indexes instead. Note that we need to treat the last value specially -
+    # it can't have a trailing comma!
+    for index in (seq 1 (math $col_count - 1))
+        set col $header[$index]
+        set value $values[$index]
+
+        printf '    "%s": "%s",\n' $col $value # <- Note indent level 2
+    end
+
+    # Last value shouldn't have a comma
+    printf '    "%s": "%s"\n' $header[$col_count] $values[$col_count]
+end
+
+function _process_file -a file
+    # Split the file by newlines to get an list of lines, then store it in the
+    # variable `$lines`.
+    set lines (string trim (string split '\n' < $file))
+
+    # Our header is the first line
+    set header (string split ',' $lines[1])
+    # We use this later with `seq` to index into `header`
+    set col_count (count $header)
+
+    # We need to skip line 1, since that's the header. We also need to skip the
+    # last line, since it can't have a trailing comma.
+    for line in $lines[2..-2]
+        echo "  {" # <- Each line is a JSON object, with 1 level indent
+        _process_line $line $col_count $header
+        echo "  },"
+    end
+
+    echo "  {"
+    _process_line $lines[-1] $col_count $header # Last line
+    echo "  }"
+end
+
+function _print_header -a filename
+    printf "<== %s ==>\n" $filename
+end
+
+function csv2json
+    argparse h/help -- $argv
+    or set -f failure true # set a failure flag, but otherwise fail silently.
+
+    # check if we've failed
+    if set -q failure
+        _print_help
+        return 1
+    end
+
+    # check if the user requested help
+    if set -q _flag_h
+        _print_help
+        return 0
+    end
+
+    # as argparse goes through $argv, it removes all the options but leaves
+    # arguments behind, which are our files.
+    set files $argv
+
+   for file in $files # <- do this for every file we get on the command line
+        # If we have more than 1 file, we need to print headers
+        if test (count $files) -gt 1
+            _print_header $file
+        end
+
+        echo "[" # <- Each CSV is a list of JSON objects
+
+        _process_file $file
+
+        echo "]"
+    end
+
+    return 0
+end
+
+csv2json $argv
