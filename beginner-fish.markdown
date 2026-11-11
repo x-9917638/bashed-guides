@@ -17,8 +17,18 @@ Together, we will write a simple CSV parsing and pretty-printing utility!!
 * [Basic Concepts](#basic-concepts)
 * [Project](#the-project)
 * [Command Line Interface](#command-line-interface)
-* [Parsing with `argparse`](#parsing-with-argparse)
 * [Exercise 1](#exercise-1)
+* [Reading a File](#reading-a-file)
+* [Exercise 2](#exercise-2)
+* [Handling Multiple Files](#handling-multiple-files)
+* [Exercise 3](#exercise-3)
+* [Reading Files... But Better?](#reading-files-but-better)
+* [Exercise 4](#exercise-4)
+* [Parsing CSV](#parsing-csv)
+* [Exercise 5](#exercise-5)
+* [Converting To JSON](#converting-to-json)
+* [Exercise 6](#exercise-6)
+* [Shipping](#shipping)
 
 ## Setup
 
@@ -507,7 +517,7 @@ end
 return 0
 ```
 
-### Exercise 3
+### Exercise 4
 
 There's nothing to implement this chapter, just make sure your code now also
 reads the file into an array and iterates over it.
@@ -531,7 +541,7 @@ This makes it relatively easy to parse! For our next exercise, we will
 implement the parsing of CSV files.
 
 
-### Exercise 4
+### Exercise 5
 
 Wait, but there were no new concepts explained? Why's it the exercise already??
 
@@ -842,7 +852,7 @@ This means:
 - We need to keep track of our column names, which will be in row 1.
 
 
-### Exercise 5
+### Exercise 6
 
 This exercise will be a *challenge*. I'm sending you into the deep end, without
 much explanation. You best bet will be to use the reading skills you
